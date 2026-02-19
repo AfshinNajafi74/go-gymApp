@@ -10,8 +10,16 @@ import (
 	"github.com/AfshinNajafi74/go-gymApp/internal/repository/postgres"
 	"github.com/AfshinNajafi74/go-gymApp/pkg/database"
 	"github.com/gorilla/mux"
+
+	_ "github.com/AfshinNajafi74/go-gymApp/docs"
+	"github.com/swaggo/http-swagger"
 )
 
+// @title Gym App API
+// @version 1.0
+// @description Backend API for Gym App
+// @host localhost:8080
+// @BasePath /
 func main() {
 
 	// Load config
@@ -30,6 +38,7 @@ func main() {
 
 	// Router
 	r := mux.NewRouter()
+	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
 	r.HandleFunc("/register", userHandler.Register).Methods("POST")
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
