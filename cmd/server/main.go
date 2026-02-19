@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/AfshinNajafi74/go-gymApp/internal/config"
+	"github.com/AfshinNajafi74/go-gymApp/internal/repository/postgres"
 	"github.com/AfshinNajafi74/go-gymApp/pkg/database"
 	"github.com/gorilla/mux"
 )
@@ -19,6 +20,10 @@ func main() {
 	// Connect database
 	db := database.NewPostgres(cfg.DBUrl)
 	_ = db
+
+	userRepo := postgres.NewUserRepository(db)
+
+	userService := user.NewService(userRepo)
 
 	// Router
 	r := mux.NewRouter()
