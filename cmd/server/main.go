@@ -29,8 +29,10 @@ func main() {
 
 	// Connect database
 	db := database.NewPostgres(cfg.DBUrl)
-	_ = db
-
+	err := db.AutoMigrate(&user.User{})
+	if err != nil {
+		log.Fatal(err)
+	}
 	userRepo := postgres.NewUserRepository(db)
 
 	userService := user.NewService(userRepo)
@@ -42,6 +44,9 @@ func main() {
 
 	r.HandleFunc("/register", userHandler.Register).Methods("POST")
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
+	r.Handle("/profile",
+		userHttp.JWTMiddleware(http.HandlerFunc(userHandler.Profile)),
+	).Methods("GET")
 
 	log.Println("Server running on : " + cfg.Port)
 	log.Fatal(http.ListenAndServe(":"+cfg.Port, r))

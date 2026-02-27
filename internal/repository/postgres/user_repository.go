@@ -22,3 +22,11 @@ func (r *userRepository) GetByEmail(email string) (*user.User, error) {
 	err := r.db.Where("email = ?", email).First(&u).Error
 	return &u, err
 }
+func (r *userRepository) GetByID(id uint) (*user.User, error) {
+	var u user.User
+	err := r.db.First(&u, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}

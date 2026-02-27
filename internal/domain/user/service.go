@@ -9,6 +9,7 @@ import (
 type Service interface {
 	Register(name, email, password string) error
 	Login(email, password string) (*User, error)
+	GetByID(id uint) (*User, error)
 }
 
 type service struct {
@@ -47,4 +48,8 @@ func (s *service) Login(email, password string) (*User, error) {
 	}
 
 	return user, nil
+}
+
+func (s *service) GetByID(id uint) (*User, error) {
+	return s.repo.GetByID(id)
 }

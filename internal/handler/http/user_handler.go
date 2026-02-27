@@ -94,3 +94,21 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 }
+
+// Profile godoc
+// @Summary Get user profile
+// @Tags users
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} user.User
+// @Failure 401 {string} string
+// @Router /profile [get]
+func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id")
+	u, err := h.service.GetByID(uint(userID.(float64)))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	json.NewEncoder(w).Encode(u)
+}

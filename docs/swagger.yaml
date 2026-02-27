@@ -30,6 +30,21 @@ definitions:
       name:
         type: string
     type: object
+  user.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      updatedAt:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -65,6 +80,24 @@ paths:
           schema:
             type: string
       summary: Login a user
+      tags:
+      - users
+  /profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.User'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get user profile
       tags:
       - users
   /register:
