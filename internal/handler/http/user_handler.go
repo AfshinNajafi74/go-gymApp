@@ -3,19 +3,22 @@ package http
 import (
 	"encoding/json"
 	"net/http"
-	"time"
-
-	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/AfshinNajafi74/go-gymApp/internal/domain/user"
+	"github.com/AfshinNajafi74/go-gymApp/internal/handler/dto"
+	"github.com/AfshinNajafi74/go-gymApp/pkg/auth"
 )
 
 type UserHandler struct {
-	service user.Service
+	service   user.Service
+	jwtSecret string
 }
 
-func NewUserHandler(s user.Service) *UserHandler {
-	return &UserHandler{service: s}
+func NewUserHandler(s user.Service, jwtSecret string) *UserHandler {
+	return &UserHandler{
+		service:   s,
+		jwtSecret: jwtSecret,
+	}
 }
 
 // Register godoc
@@ -35,21 +38,25 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Register(req.Name, req.Email, req.Password)
+	u, err := h.service.Register(
+		req.Name,
+		req.Email,
+		req.Password,
+	)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	//resp := RegisterResponse{
-	//	ID:    user.ID,
-	//	Name:  user.Name,
-	//	Email: user.Email,
-	//}
+	tokenString, err := auth.GenerateToken(u.ID, h.jwtSecret)
+	resp := dto.RegisterResponse{
+		Token: tokenString,
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("User created"))
+	json.NewEncoder(w).Encode(resp)
 }
 
 // Login godoc
@@ -77,14 +84,8 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// تولید JWT
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
-	})
+	tokenString, err := auth.GenerateToken(user.ID, h.jwtSecret)
 
-	secret := []byte("supersecretkey") // بهتره از cfg.JWT_SECRET بخونی
-	tokenString, err := token.SignedString(secret)
 	if err != nil {
 		http.Error(w, "failed to generate token", http.StatusInternalServerError)
 		return
@@ -92,7 +93,10 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	resp := LoginResponse{Token: tokenString}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		return
+	}
 }
 
 // Profile godoc
@@ -100,7 +104,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Security BearerAuth
 // @Produce json
-// @Success 200 {object} user.User
+// @Success 200 {object} dto.UserResponse
 // @Failure 401 {string} string
 // @Router /profile [get]
 func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
@@ -110,5 +114,14 @@ func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	json.NewEncoder(w).Encode(u)
+	resp := dto.UserResponse{
+		ID:        u.ID,
+		Name:      u.Name,
+		Email:     u.Email,
+		CreatedAt: u.CreatedAt,
+	}
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		return
+	}
 }

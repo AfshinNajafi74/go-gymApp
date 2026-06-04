@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  dto.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   http.LoginRequest:
     properties:
       email:
@@ -28,21 +39,6 @@ definitions:
       id:
         type: string
       name:
-        type: string
-    type: object
-  user.User:
-    properties:
-      createdAt:
-        type: string
-      email:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      password:
-        type: string
-      updatedAt:
         type: string
     type: object
 host: localhost:8080
@@ -90,7 +86,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.User'
+            $ref: '#/definitions/dto.UserResponse'
         "401":
           description: Unauthorized
           schema:
@@ -126,4 +122,9 @@ paths:
       summary: Register a new user
       tags:
       - users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	Register(name, email, password string) error
+	Register(name, email, password string) (*User, error)
 	Login(email, password string) (*User, error)
 	GetByID(id uint) (*User, error)
 }
@@ -20,12 +20,8 @@ func NewService(r Repository) Service {
 	return &service{repo: r}
 }
 
-func (s *service) Register(name, email, password string) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-
-	if err != nil {
-		return err
-	}
+func (s *service) Register(name, email, password string) (*User, error) {
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
 
 	user := &User{
 		Name:     name,
@@ -33,7 +29,11 @@ func (s *service) Register(name, email, password string) error {
 		Password: string(hashedPassword),
 	}
 
-	return s.repo.Create(user)
+	if err := s.repo.Create(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (s *service) Login(email, password string) (*User, error) {

@@ -20,6 +20,9 @@ import (
 // @description Backend API for Gym App
 // @host localhost:8080
 // @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 
 	// Load config
@@ -36,7 +39,7 @@ func main() {
 	userRepo := postgres.NewUserRepository(db)
 
 	userService := user.NewService(userRepo)
-	userHandler := userHttp.NewUserHandler(userService)
+	userHandler := userHttp.NewUserHandler(userService, cfg.JWTSecret)
 
 	// Router
 	r := mux.NewRouter()
