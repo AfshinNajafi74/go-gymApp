@@ -7,7 +7,10 @@ import (
 	"github.com/AfshinNajafi74/go-gymApp/internal/domain/user"
 	"github.com/AfshinNajafi74/go-gymApp/internal/handler/dto"
 	"github.com/AfshinNajafi74/go-gymApp/pkg/auth"
+	"github.com/go-playground/validator/v10"
 )
+
+var validate = validator.New()
 
 type UserHandler struct {
 	service   user.Service
@@ -33,8 +36,46 @@ func NewUserHandler(s user.Service, jwtSecret string) *UserHandler {
 // @Router /register [post]
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
+
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := validate.Struct(req); err != nil {
+
+		validationErrors := make(map[string]string)
+
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+
+			switch fieldErr.Tag() {
+
+			case "required":
+				validationErrors[fieldErr.Field()] = "this field is required"
+
+			case "email":
+				validationErrors[fieldErr.Field()] = "invalid email format"
+
+			case "min":
+				if fieldErr.Field() == "Password" {
+					validationErrors[fieldErr.Field()] =
+						"password must be at least 6 characters"
+				}
+
+			default:
+				validationErrors[fieldErr.Field()] = "invalid value"
+			}
+		}
+
+		resp := dto.ValidationErrorResponse{
+			Message: "validation failed",
+			Errors:  validationErrors,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+
+		_ = json.NewEncoder(w).Encode(resp)
 		return
 	}
 
@@ -43,13 +84,17 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		req.Email,
 		req.Password,
 	)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	tokenString, err := auth.GenerateToken(u.ID, h.jwtSecret)
+	if err != nil {
+		http.Error(w, "failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
 	resp := dto.RegisterResponse{
 		Token: tokenString,
 		User: dto.UserResponse{
@@ -61,7 +106,11 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(resp)
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // Login godoc
