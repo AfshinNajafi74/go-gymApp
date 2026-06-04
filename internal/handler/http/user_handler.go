@@ -52,6 +52,11 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	tokenString, err := auth.GenerateToken(u.ID, h.jwtSecret)
 	resp := dto.RegisterResponse{
 		Token: tokenString,
+		User: dto.UserResponse{
+			ID:    u.ID,
+			Name:  u.Name,
+			Email: u.Email,
+		},
 	}
 
 	w.Header().Set("Content-Type", "application/json")
