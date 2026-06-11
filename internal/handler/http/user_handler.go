@@ -30,12 +30,12 @@ func NewUserHandler(s user.Service, jwtSecret string) *UserHandler {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user body RegisterRequest true "User Info"
-// @Success 201 {object} RegisterResponse "Created"
-// @Failure 400 {string} string "Bad Request"
+// @Param user body dto.RegisterRequest true "User Info"
+// @Success 201 {object} dto.RegisterResponse "Created"
+// @Failure 400 {object} dto.ValidationErrorResponse
 // @Router /register [post]
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var req RegisterRequest
+	var req dto.RegisterRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -84,8 +84,19 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		req.Email,
 		req.Password,
 	)
+
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		resp := dto.ValidationErrorResponse{
+			Message: "validation failed",
+			Errors: map[string]string{
+				"email": err.Error(),
+			},
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+
+		_ = json.NewEncoder(w).Encode(resp)
 		return
 	}
 
@@ -119,14 +130,14 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user body LoginRequest true "User Credentials"
-// @Success 200 {object} LoginResponse "JWT token returned"
-// @Failure 400 {string} string "Bad Request"
+// @Param user body dto.LoginRequest true "User Credentials"
+// @Success 200 {object} dto.LoginResponse "JWT token returned"
+// @Failure 400 {object} dto.ValidationErrorResponse
 // @Failure 401 {string} string "Unauthorized"
 // @Router /login [post]
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
-	var req LoginRequest
+	var req dto.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -145,7 +156,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := LoginResponse{Token: tokenString}
+	resp := dto.LoginResponse{Token: tokenString}
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {

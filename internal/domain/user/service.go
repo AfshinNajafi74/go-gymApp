@@ -21,7 +21,20 @@ func NewService(r Repository) Service {
 }
 
 func (s *service) Register(name, email, password string) (*User, error) {
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+
+	existingUser, err := s.repo.GetByEmail(email)
+
+	if err == nil && existingUser != nil {
+		return nil, errors.New("email already exists")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(password),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		return nil, err
+	}
 
 	user := &User{
 		Name:     name,
@@ -35,7 +48,6 @@ func (s *service) Register(name, email, password string) (*User, error) {
 
 	return user, nil
 }
-
 func (s *service) Login(email, password string) (*User, error) {
 	user, err := s.repo.GetByEmail(email)
 	if err != nil {
