@@ -1,5 +1,59 @@
 basePath: /
 definitions:
+  dto.AthleteProfileResponse:
+    properties:
+      experience_level:
+        $ref: '#/definitions/profile.ExperienceLevel'
+      goal:
+        $ref: '#/definitions/profile.Goal'
+      height:
+        type: number
+      user_id:
+        type: integer
+      weight:
+        type: number
+    type: object
+  dto.CoachProfileResponse:
+    properties:
+      bio:
+        type: string
+      specialization:
+        type: string
+      user_id:
+        type: integer
+      years_of_exp:
+        type: integer
+    type: object
+  dto.CreateAthleteProfileRequest:
+    properties:
+      experience_level:
+        $ref: '#/definitions/profile.ExperienceLevel'
+      goal:
+        $ref: '#/definitions/profile.Goal'
+      height:
+        type: number
+      weight:
+        type: number
+    required:
+    - experience_level
+    - goal
+    - height
+    - weight
+    type: object
+  dto.CreateCoachProfileRequest:
+    properties:
+      bio:
+        type: string
+      specialization:
+        type: string
+      years_of_exp:
+        minimum: 0
+        type: integer
+    required:
+    - bio
+    - specialization
+    - years_of_exp
+    type: object
   dto.LoginRequest:
     properties:
       email:
@@ -35,6 +89,36 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserResponse'
     type: object
+  dto.UpdateAthleteProfileRequest:
+    properties:
+      experience_level:
+        $ref: '#/definitions/profile.ExperienceLevel'
+      goal:
+        $ref: '#/definitions/profile.Goal'
+      height:
+        type: number
+      weight:
+        type: number
+    required:
+    - experience_level
+    - goal
+    - height
+    - weight
+    type: object
+  dto.UpdateCoachProfileRequest:
+    properties:
+      bio:
+        type: string
+      specialization:
+        type: string
+      years_of_exp:
+        minimum: 0
+        type: integer
+    required:
+    - bio
+    - specialization
+    - years_of_exp
+    type: object
   dto.UserResponse:
     properties:
       created_at:
@@ -55,6 +139,28 @@ definitions:
       message:
         type: string
     type: object
+  profile.ExperienceLevel:
+    enum:
+    - beginner
+    - intermediate
+    - advanced
+    type: string
+    x-enum-varnames:
+    - LevelBeginner
+    - LevelIntermediate
+    - LevelAdvanced
+  profile.Goal:
+    enum:
+    - weight_loss
+    - muscle_gain
+    - endurance
+    - general_health
+    type: string
+    x-enum-varnames:
+    - GoalWeightLoss
+    - GoalMuscleGain
+    - GoalEndurance
+    - GoalGeneralHealth
 host: localhost:8080
 info:
   contact: {}
@@ -110,6 +216,171 @@ paths:
       summary: Get user profile
       tags:
       - users
+  /profile/athlete:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AthleteProfileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get athlete profile
+      tags:
+      - profile
+    post:
+      consumes:
+      - application/json
+      description: Create a profile for an athlete user
+      parameters:
+      - description: Athlete Profile Info
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAthleteProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.AthleteProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ValidationErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create athlete profile
+      tags:
+      - profile
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Updated Athlete Profile
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAthleteProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AthleteProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ValidationErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update athlete profile
+      tags:
+      - profile
+  /profile/coach:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CoachProfileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get coach profile
+      tags:
+      - profile
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Coach Profile Info
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCoachProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CoachProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ValidationErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create coach profile
+      tags:
+      - profile
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Updated Coach Profile
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCoachProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CoachProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ValidationErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update coach profile
+      tags:
+      - profile
   /register:
     post:
       consumes:

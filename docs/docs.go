@@ -91,6 +91,271 @@ const docTemplate = `{
                 }
             }
         },
+        "/profile/athlete": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get athlete profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AthleteProfileResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Update athlete profile",
+                "parameters": [
+                    {
+                        "description": "Updated Athlete Profile",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateAthleteProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AthleteProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ValidationErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a profile for an athlete user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Create athlete profile",
+                "parameters": [
+                    {
+                        "description": "Athlete Profile Info",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAthleteProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AthleteProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ValidationErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/coach": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get coach profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CoachProfileResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Update coach profile",
+                "parameters": [
+                    {
+                        "description": "Updated Coach Profile",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCoachProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CoachProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ValidationErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Create coach profile",
+                "parameters": [
+                    {
+                        "description": "Coach Profile Info",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCoachProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CoachProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ValidationErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "description": "Create a new user account",
@@ -133,6 +398,86 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.AthleteProfileResponse": {
+            "type": "object",
+            "properties": {
+                "experience_level": {
+                    "$ref": "#/definitions/profile.ExperienceLevel"
+                },
+                "goal": {
+                    "$ref": "#/definitions/profile.Goal"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.CoachProfileResponse": {
+            "type": "object",
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "specialization": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "years_of_exp": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CreateAthleteProfileRequest": {
+            "type": "object",
+            "required": [
+                "experience_level",
+                "goal",
+                "height",
+                "weight"
+            ],
+            "properties": {
+                "experience_level": {
+                    "$ref": "#/definitions/profile.ExperienceLevel"
+                },
+                "goal": {
+                    "$ref": "#/definitions/profile.Goal"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.CreateCoachProfileRequest": {
+            "type": "object",
+            "required": [
+                "bio",
+                "specialization",
+                "years_of_exp"
+            ],
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "specialization": {
+                    "type": "string"
+                },
+                "years_of_exp": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
         "dto.LoginRequest": {
             "type": "object",
             "properties": {
@@ -185,6 +530,49 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateAthleteProfileRequest": {
+            "type": "object",
+            "required": [
+                "experience_level",
+                "goal",
+                "height",
+                "weight"
+            ],
+            "properties": {
+                "experience_level": {
+                    "$ref": "#/definitions/profile.ExperienceLevel"
+                },
+                "goal": {
+                    "$ref": "#/definitions/profile.Goal"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.UpdateCoachProfileRequest": {
+            "type": "object",
+            "required": [
+                "bio",
+                "specialization",
+                "years_of_exp"
+            ],
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "specialization": {
+                    "type": "string"
+                },
+                "years_of_exp": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
         "dto.UserResponse": {
             "type": "object",
             "properties": {
@@ -215,6 +603,34 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "profile.ExperienceLevel": {
+            "type": "string",
+            "enum": [
+                "beginner",
+                "intermediate",
+                "advanced"
+            ],
+            "x-enum-varnames": [
+                "LevelBeginner",
+                "LevelIntermediate",
+                "LevelAdvanced"
+            ]
+        },
+        "profile.Goal": {
+            "type": "string",
+            "enum": [
+                "weight_loss",
+                "muscle_gain",
+                "endurance",
+                "general_health"
+            ],
+            "x-enum-varnames": [
+                "GoalWeightLoss",
+                "GoalMuscleGain",
+                "GoalEndurance",
+                "GoalGeneralHealth"
+            ]
         }
     },
     "securityDefinitions": {
